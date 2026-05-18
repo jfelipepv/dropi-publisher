@@ -1,0 +1,386 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Dropi Publisher Pro</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f8f9fa;color:#0f172a;min-height:100vh;padding:2rem 1rem;}
+.container{max-width:740px;margin:0 auto;}
+.header{display:flex;align-items:center;gap:14px;margin-bottom:2rem;}
+.logo{width:44px;height:44px;background:#1D9E75;border-radius:12px;display:flex;align-items:center;justify-content:center;color:white;font-weight:800;font-size:20px;}
+.header h1{font-size:22px;font-weight:700;color:#0f172a;}
+.header p{font-size:13px;color:#64748b;margin-top:2px;}
+.card{background:white;border-radius:14px;border:1px solid #e2e8f0;padding:1.75rem;margin-bottom:1rem;box-shadow:0 1px 3px rgba(0,0,0,.04);}
+.tab-row{display:flex;gap:4px;border-bottom:1px solid #e2e8f0;margin-bottom:1.75rem;}
+.tab{font-size:13px;padding:8px 20px;cursor:pointer;border:none;background:none;color:#64748b;border-bottom:2px solid transparent;margin-bottom:-1px;font-weight:500;transition:color .15s;}
+.tab.active{color:#1D9E75;border-bottom-color:#1D9E75;}
+.section{display:none;}.section.active{display:block;}
+.sec-label{font-size:11px;color:#94a3b8;text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px;margin-top:1.5rem;font-weight:600;}
+.sec-label:first-child{margin-top:0;}
+.sec-title{font-size:16px;font-weight:600;color:#0f172a;margin-bottom:1rem;}
+.field{margin-bottom:1rem;}
+.field-label{font-size:12px;color:#64748b;margin-bottom:5px;font-weight:500;}
+.field-hint{font-size:11px;color:#94a3b8;margin-top:3px;line-height:1.4;}
+.req{color:#e24b4a;}
+input[type=text],input[type=password],input[type=url],textarea,select{width:100%;padding:9px 13px;font-size:13px;border:1px solid #e2e8f0;border-radius:8px;background:white;color:#0f172a;font-family:inherit;outline:none;transition:border-color .15s,box-shadow .15s;}
+input:focus,textarea:focus,select:focus{border-color:#1D9E75;box-shadow:0 0 0 3px rgba(29,158,117,.1);}
+textarea{resize:vertical;min-height:100px;line-height:1.5;}
+.char-bar{display:flex;justify-content:flex-end;margin-top:3px;}
+.char-count{font-size:11px;}
+.ok{color:#0F6E56;}.warn{color:#BA7517;}.bad{color:#e24b4a;}
+.divider{border:none;border-top:1px solid #f1f5f9;margin:1.5rem 0;}
+.sites-list{display:flex;flex-direction:column;gap:6px;}
+.site-row{display:flex;align-items:center;gap:10px;padding:10px 13px;border:1px solid #e2e8f0;border-radius:8px;background:#f8fafc;transition:border-color .15s,background .15s;}
+.site-row:not(.off):hover{border-color:#1D9E75;background:#f0fdf9;}
+.site-row.off{opacity:.4;pointer-events:none;}
+.site-row input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:#1D9E75;flex-shrink:0;}
+.site-flag{font-size:18px;flex-shrink:0;}
+.site-info{flex:1;min-width:0;}
+.site-name{font-size:13px;font-weight:600;color:#0f172a;}
+.site-domain{font-size:11px;color:#94a3b8;}
+.badge{font-size:10px;padding:2px 8px;border-radius:20px;margin-left:6px;font-weight:600;}
+.badge-ok{background:#dcfce7;color:#166534;}
+.badge-warn{background:#fef3c7;color:#92400e;}
+.sel-row{display:flex;gap:8px;margin-bottom:10px;}
+.btn-link{font-size:12px;padding:5px 12px;border-radius:6px;cursor:pointer;background:transparent;border:1px solid #e2e8f0;color:#64748b;transition:background .15s;}
+.btn-link:hover{background:#f1f5f9;}
+.btn-main{background:#1D9E75;color:white;border:none;border-radius:9px;padding:13px 24px;font-size:14px;font-weight:600;cursor:pointer;width:100%;margin-top:6px;transition:background .15s,transform .1s;}
+.btn-main:hover{background:#0F6E56;}
+.btn-main:active{transform:scale(.99);}
+.btn-main:disabled{background:#e2e8f0;color:#94a3b8;cursor:not-allowed;transform:none;}
+.btn-sm{font-size:11px;padding:4px 10px;border-radius:6px;cursor:pointer;background:transparent;border:1px solid #e2e8f0;color:#64748b;white-space:nowrap;}
+.btn-sm:hover{background:#f1f5f9;}
+.progress-bar{height:5px;background:#f1f5f9;border-radius:3px;margin:14px 0 10px;overflow:hidden;}
+.progress-fill{height:100%;background:#1D9E75;border-radius:3px;transition:width .4s ease;}
+.log-box{background:#f8fafc;border-radius:8px;padding:12px 14px;font-size:12px;font-family:'SF Mono',Monaco,monospace;color:#64748b;max-height:230px;overflow-y:auto;border:1px solid #e2e8f0;line-height:1.6;}
+.log-line{padding:2px 0;border-bottom:1px solid #f1f5f9;}
+.log-line:last-child{border-bottom:none;}
+.l-ok{color:#0F6E56;font-weight:500;}.l-err{color:#e24b4a;font-weight:500;}.l-info{color:#185FA5;}
+.info-box{background:#eff6ff;border:1px solid #bfdbfe;border-radius:9px;padding:13px;font-size:13px;color:#1e40af;margin-bottom:1.25rem;line-height:1.6;}
+.success-box{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:9px;padding:13px;font-size:13px;color:#166534;margin-top:14px;display:none;line-height:1.6;}
+.config-grid{display:flex;flex-direction:column;gap:8px;}
+.config-card{border:1px solid #e2e8f0;border-radius:9px;padding:13px;background:#f8fafc;}
+.config-card-header{display:flex;align-items:center;gap:10px;margin-bottom:9px;}
+.pass-row{display:flex;gap:6px;align-items:center;}
+.pass-row input{font-size:12px;padding:7px 10px;flex:1;}
+.server-row{display:flex;gap:8px;align-items:flex-end;margin-bottom:1rem;}
+.server-row input{flex:1;}
+.server-status{font-size:12px;margin-top:6px;padding:8px 12px;border-radius:6px;}
+.ss-ok{background:#f0fdf4;color:#166534;border:1px solid #bbf7d0;}
+.ss-err{background:#fef2f2;color:#991b1b;border:1px solid #fecaca;}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="logo">D</div>
+    <div>
+      <h1>Dropi Publisher Pro</h1>
+      <p>Publicador multi-sitio · WordPress + Yoast SEO</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="tab-row">
+      <button class="tab active" onclick="switchTab('publish',this)">Publicar blog</button>
+      <button class="tab" onclick="switchTab('config',this)">Configurar</button>
+    </div>
+
+    <!-- TAB PUBLICAR -->
+    <div id="tab-publish" class="section active">
+
+      <div class="sec-label">Sección 1 — Contenido</div>
+      <div class="sec-title">Información del blog</div>
+
+      <div class="field">
+        <div class="field-label">Título de la página <span class="req">*</span></div>
+        <input type="text" id="post-title" placeholder="¿Qué es el Dropshipping en [PAÍS]? Guía Completa 2026 | Dropi"/>
+        <div class="field-hint">Usa <strong>[PAÍS]</strong> donde debe aparecer el nombre del país (Colombia, Argentina…). Si el título es genérico, déjalo fijo.</div>
+      </div>
+
+      <div class="field">
+        <div class="field-label">Slug / URL SEO <span class="req">*</span></div>
+        <input type="text" id="post-slug" placeholder="que-es-dropshipping-[pais]-2026"/>
+        <div class="field-hint">Usa <strong>[pais]</strong> en minúsculas. Se reemplaza por: colombia, argentina, mexico, chile, ecuador, peru, paraguay, guatemala.</div>
+      </div>
+
+      <div class="field">
+        <div class="field-label">Contenido HTML <span class="req">*</span></div>
+        <textarea id="post-content" style="min-height:130px;" placeholder="Pega aquí el HTML completo del blog. Usa [PAÍS] donde debe ir el nombre del país..."></textarea>
+      </div>
+
+      <div class="field">
+        <div class="field-label">Estado al crear</div>
+        <select id="post-status">
+          <option value="draft" selected>Borrador (recomendado — agregas imagen y publicas)</option>
+          <option value="publish">Publicado directamente</option>
+        </select>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="sec-label">Sección 2 — Yoast SEO</div>
+      <div class="sec-title">Metadatos SEO</div>
+
+      <div class="field">
+        <div class="field-label">Frase clave de enfoque</div>
+        <input type="text" id="yoast-keyphrase" placeholder="dropshipping en [PAÍS]"/>
+      </div>
+
+      <div class="field">
+        <div class="field-label">Título SEO</div>
+        <input type="text" id="yoast-title" oninput="countChars('yoast-title','ytc',50,60)" placeholder="¿Qué es el Dropshipping en [PAÍS]? Guía Completa 2026 | Dropi"/>
+        <div class="char-bar"><span id="ytc" class="char-count ok">0</span>&nbsp;/ 60 caracteres recomendados</div>
+      </div>
+
+      <div class="field">
+        <div class="field-label">Metadescripción</div>
+        <textarea id="yoast-desc" style="min-height:72px;" oninput="countChars('yoast-desc','ydc',120,155)" placeholder="Aprende qué es el dropshipping en [PAÍS] y cómo empezar tu negocio online desde cero con Dropi. Guía completa 2026."></textarea>
+        <div class="char-bar"><span id="ydc" class="char-count ok">0</span>&nbsp;/ 155 caracteres recomendados</div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="sec-label">Sección 3 — Destino</div>
+      <div class="sec-title">Seleccionar países</div>
+      <div class="sel-row">
+        <button class="btn-link" onclick="selectAll(true)">Seleccionar todos</button>
+        <button class="btn-link" onclick="selectAll(false)">Deseleccionar todos</button>
+      </div>
+      <div class="sites-list" id="site-checkboxes"></div>
+
+      <div class="divider"></div>
+
+      <button class="btn-main" id="btn-publish" onclick="publishAll()">🚀 Publicar en sitios seleccionados</button>
+
+      <div id="progress-wrap" style="display:none;margin-top:16px;">
+        <div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+        <div class="log-box" id="log-box"></div>
+      </div>
+
+      <div class="success-box" id="success-box">
+        ✅ Proceso completado. Entra a cada WordPress, asigna la imagen destacada y publica los borradores.
+      </div>
+    </div>
+
+    <!-- TAB CONFIG -->
+    <div id="tab-config" class="section">
+
+      <div class="sec-label">Servidor</div>
+      <div class="sec-title">URL del backend</div>
+      <div class="field">
+        <div class="field-label">URL de tu servidor en Render</div>
+        <div class="server-row">
+          <input type="url" id="server-url" placeholder="https://dropi-publisher.onrender.com" oninput="saveServerUrl()"/>
+          <button class="btn-link" onclick="testServer()">Probar conexión</button>
+        </div>
+        <div id="server-status" style="display:none;"></div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="sec-label">Contraseñas de aplicación</div>
+      <div class="sec-title">Credenciales por sitio</div>
+      <div class="info-box">
+        Para cada sitio: <strong>wp-admin → Usuarios → Tu perfil → Contraseñas de aplicación</strong> → escribe "Dropi Tool" → Añadir nueva. Copia y pega aquí. Se guardan en tu navegador.
+      </div>
+      <div class="config-grid" id="config-grid"></div>
+      <button class="btn-main" style="margin-top:12px;" onclick="saveConfig()">Guardar configuración</button>
+      <div class="success-box" id="config-ok">✅ Configuración guardada correctamente.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const SITES=[
+  {id:'co',domain:'dropi.co',country:'Colombia',flag:'🇨🇴',user:'daniela',main:true},
+  {id:'ar',domain:'dropi.ar',country:'Argentina',flag:'🇦🇷',user:'daniela'},
+  {id:'mx',domain:'dropi.mx',country:'México',flag:'🇲🇽',user:'daniela'},
+  {id:'cl',domain:'dropi.cl',country:'Chile',flag:'🇨🇱',user:'daniela'},
+  {id:'ec',domain:'dropi.ec',country:'Ecuador',flag:'🇪🇨',user:'daniela'},
+  {id:'pe',domain:'dropi.pe',country:'Perú',flag:'🇵🇪',user:'daniela'},
+  {id:'py',domain:'dropi.com.py',country:'Paraguay',flag:'🇵🇾',user:'daniela'},
+  {id:'gt',domain:'dropi.gt',country:'Guatemala',flag:'🇬🇹',user:'daniela'},
+];
+
+function getPW(){try{return JSON.parse(localStorage.getItem('dropi_pw_v3')||'{}');}catch(e){return{};}}
+function savePW(p){try{localStorage.setItem('dropi_pw_v3',JSON.stringify(p));}catch(e){}}
+function getServerUrl(){return localStorage.getItem('dropi_server_url')||'';}
+function saveServerUrl(){localStorage.setItem('dropi_server_url',document.getElementById('server-url').value.trim());}
+
+function switchTab(id,btn){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+
+function countChars(inputId,countId,soft,max){
+  const len=document.getElementById(inputId).value.length;
+  const el=document.getElementById(countId);
+  el.textContent=len;
+  el.className='char-count '+(len<soft?'warn':len<=max?'ok':'bad');
+}
+
+function renderCheckboxes(){
+  const pw=getPW();
+  document.getElementById('site-checkboxes').innerHTML=SITES.filter(s=>!s.main).map(s=>{
+    const has=!!pw[s.id];
+    return`<div class="site-row${has?'':' off'}">
+      <input type="checkbox" id="chk-${s.id}" value="${s.id}" ${has?'':'disabled'}/>
+      <span class="site-flag">${s.flag}</span>
+      <div class="site-info">
+        <div class="site-name">${s.country}<span class="badge ${has?'badge-ok':'badge-warn'}">${has?'Listo':'Sin contraseña'}</span></div>
+        <div class="site-domain">${s.domain}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderConfig(){
+  const pw=getPW();
+  const serverUrl=getServerUrl();
+  if(serverUrl) document.getElementById('server-url').value=serverUrl;
+  document.getElementById('config-grid').innerHTML=SITES.map(s=>`
+    <div class="config-card">
+      <div class="config-card-header">
+        <span style="font-size:20px;">${s.flag}</span>
+        <div>
+          <div style="font-size:13px;font-weight:600;">${s.country}${s.main?' <span style="font-size:10px;color:#185FA5;font-weight:400;">(principal)</span>':''}</div>
+          <div style="font-size:11px;color:#94a3b8;">${s.domain} — usuario: <strong>${s.user}</strong></div>
+        </div>
+      </div>
+      <div class="pass-row">
+        <input type="password" id="pw-${s.id}" placeholder="Application password" value="${pw[s.id]||''}"/>
+        <button class="btn-sm" onclick="togglePw('${s.id}')">Ver</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function togglePw(id){
+  const i=document.getElementById('pw-'+id);
+  i.type=i.type==='password'?'text':'password';
+}
+
+function selectAll(val){
+  const pw=getPW();
+  SITES.filter(s=>!s.main&&pw[s.id]).forEach(s=>{
+    const c=document.getElementById('chk-'+s.id);
+    if(c)c.checked=val;
+  });
+}
+
+function saveConfig(){
+  const pw={};
+  SITES.forEach(s=>{
+    const v=document.getElementById('pw-'+s.id).value.trim();
+    if(v)pw[s.id]=v;
+  });
+  savePW(pw);
+  saveServerUrl();
+  renderConfig();
+  renderCheckboxes();
+  const ok=document.getElementById('config-ok');
+  ok.style.display='block';
+  setTimeout(()=>ok.style.display='none',3000);
+}
+
+async function testServer(){
+  const url=document.getElementById('server-url').value.trim();
+  const el=document.getElementById('server-status');
+  if(!url){el.style.display='none';return;}
+  el.style.display='block';
+  el.className='server-status';
+  el.textContent='Probando conexión...';
+  try{
+    const r=await fetch(url.replace(/\/$/,'')+'/health');
+    const d=await r.json();
+    el.className='server-status ss-ok';
+    el.textContent='✅ '+d.message;
+  }catch(e){
+    el.className='server-status ss-err';
+    el.textContent='❌ No se pudo conectar. Verifica la URL.';
+  }
+}
+
+function addLog(msg,cls=''){
+  const box=document.getElementById('log-box');
+  const d=document.createElement('div');
+  d.className='log-line'+(cls?' l-'+cls:'');
+  const t=new Date().toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  d.textContent=t+' — '+msg;
+  box.appendChild(d);
+  box.scrollTop=box.scrollHeight;
+}
+
+function setProgress(v){document.getElementById('prog-fill').style.width=v+'%';}
+
+async function publishAll(){
+  const serverUrl=getServerUrl().replace(/\/$/,'');
+  if(!serverUrl){alert('Primero configura la URL del servidor en la pestaña "Configurar".');return;}
+
+  const title=document.getElementById('post-title').value.trim();
+  const content=document.getElementById('post-content').value.trim();
+  const slug=document.getElementById('post-slug').value.trim();
+  const status=document.getElementById('post-status').value;
+  const seoTitle=document.getElementById('yoast-title').value.trim();
+  const seoDesc=document.getElementById('yoast-desc').value.trim();
+  const keyphrase=document.getElementById('yoast-keyphrase').value.trim();
+
+  if(!title||!content||!slug){alert('El título, slug y contenido son obligatorios.');return;}
+
+  const selected=Array.from(document.querySelectorAll('#site-checkboxes input:checked')).map(c=>c.value);
+  if(!selected.length){alert('Selecciona al menos un país destino.');return;}
+
+  const pw=getPW();
+  const sites=SITES.filter(s=>selected.includes(s.id));
+
+  document.getElementById('progress-wrap').style.display='block';
+  document.getElementById('success-box').style.display='none';
+  document.getElementById('log-box').innerHTML='';
+  document.getElementById('btn-publish').disabled=true;
+  setProgress(0);
+
+  addLog('Iniciando publicación en '+sites.length+' sitio(s)...','info');
+
+  let done=0;
+  for(const site of sites){
+    addLog('Publicando en '+site.country+' ('+site.domain+')...','');
+    try{
+      const res=await fetch(serverUrl+'/publish',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+          siteId:site.id,
+          username:site.user,
+          password:pw[site.id],
+          post:{title,content,slug,status,seoTitle,seoDesc,keyphrase}
+        })
+      });
+      const data=await res.json();
+      if(data.success){
+        addLog('✓ '+site.country+' — OK. Post ID #'+data.postId,'ok');
+      }else{
+        addLog('✗ '+site.country+' — Error: '+data.error,'err');
+      }
+    }catch(e){
+      addLog('✗ '+site.country+' — Error: '+e.message,'err');
+    }
+    done++;
+    setProgress(Math.round(done/sites.length*100));
+  }
+
+  addLog('Proceso completado.','info');
+  document.getElementById('btn-publish').disabled=false;
+  document.getElementById('success-box').style.display='block';
+}
+
+renderCheckboxes();
+renderConfig();
+</script>
+</body>
+</html>
