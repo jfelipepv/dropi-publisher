@@ -85,8 +85,8 @@ app.post('/publish', async (req, res) => {
         'Authorization': 'Basic ' + creds,
       },
       body: JSON.stringify({
-        title:      { raw: title },
-        content:    { raw: content },
+        title,
+        content: '<!-- wp:html -->' + content + '<!-- /wp:html -->',
         slug,
         status:     post.status || 'draft',
         categories: [catId],
