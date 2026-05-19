@@ -8,13 +8,14 @@ const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
-app.use(express.static(path.join(__dirname, 'public')));
+
+const publicPath = path.join(process.cwd(), 'public');
+app.use(express.static(publicPath));
 
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.sendFile(path.join(publicPath, 'index.html'));
 });
 
-// Configuración de sitios
 const SITES = {
   co: { domain: 'dropi.co', country: 'Colombia' },
   ar: { domain: 'dropi.ar', country: 'Argentina' },
@@ -32,18 +33,16 @@ const SLUGS = {
   py: 'paraguay', gt: 'guatemala'
 };
 
-function replaceCountry(str, country, id) {
+function rep(str, country, id) {
   if (!str) return str;
   const slug = SLUGS[id] || country.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   return str.replace(/\[PAÍS\]/gi, country).replace(/\[pais\]/gi, slug);
 }
 
-// Health check
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', message: 'Dropi Publisher Pro funcionando correctamente' });
 });
 
-// Endpoint principal: publicar en un sitio
 app.post('/publish', async (req, res) => {
   const { siteId, username, password, post } = req.body;
 
@@ -60,7 +59,6 @@ app.post('/publish', async (req, res) => {
   const base = `https://${site.domain}/wp-json/wp/v2`;
 
   try {
-    // Buscar categoría Blog
     let catId = 1;
     try {
       const catRes = await fetch(`${base}/categories?search=Blog&per_page=10`, {
@@ -73,15 +71,13 @@ app.post('/publish', async (req, res) => {
       }
     } catch (e) {}
 
-    // Reemplazar [PAÍS] y [pais]
-    const title    = replaceCountry(post.title,    site.country, siteId);
-    const content  = replaceCountry(post.content,  site.country, siteId);
-    const slug     = replaceCountry(post.slug,     site.country, siteId);
-    const seoTitle = replaceCountry(post.seoTitle, site.country, siteId);
-    const seoDesc  = replaceCountry(post.seoDesc,  site.country, siteId);
-    const keyphrase= replaceCountry(post.keyphrase,site.country, siteId);
+    const title     = rep(post.title,     site.country, siteId);
+    const content   = rep(post.content,   site.country, siteId);
+    const slug      = rep(post.slug,      site.country, siteId);
+    const seoTitle  = rep(post.seoTitle,  site.country, siteId);
+    const seoDesc   = rep(post.seoDesc,   site.country, siteId);
+    const keyphrase = rep(post.keyphrase, site.country, siteId);
 
-    // Crear el post
     const postRes = await fetch(`${base}/posts`, {
       method: 'POST',
       headers: {
@@ -89,10 +85,10 @@ app.post('/publish', async (req, res) => {
         'Authorization': 'Basic ' + creds,
       },
       body: JSON.stringify({
-        title,
-        content,
+        title:      { raw: title },
+        content:    { raw: content },
         slug,
-        status: post.status || 'draft',
+        status:     post.status || 'draft',
         categories: [catId],
         meta: {
           _yoast_wpseo_focuskw:  keyphrase,
